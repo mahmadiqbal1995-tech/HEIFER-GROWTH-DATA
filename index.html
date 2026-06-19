@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Heifer Growth Record</title>
+<title>Heifer Growth Analyzer by Farm-IQ</title>
 <style>
   :root{
     --cream:#F4EEDD;
@@ -19,7 +19,6 @@
     --error:#B33A3A;
     --font-display:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
     --font-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-    --font-urdu:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',sans-serif;
   }
 
   *{box-sizing:border-box;}
@@ -30,6 +29,7 @@
       radial-gradient(circle at 10% 0%, rgba(217,164,65,0.10), transparent 40%),
       radial-gradient(circle at 90% 100%, rgba(75,107,58,0.08), transparent 40%);
     font-family:var(--font-body);
+    font-size:17px;
     color:var(--ink);
     min-height:100vh;
     padding:18px 14px 60px;
@@ -49,19 +49,40 @@
   .tag-icon{flex-shrink:0;}
   .header h1{
     font-family:var(--font-display);
-    font-size:1.5rem;
+    font-size:1.9rem;
     font-weight:700;
-    margin:0 0 2px;
+    margin:0 0 4px;
     color:var(--barn-brown-dark);
     letter-spacing:0.2px;
   }
   .header p{
     margin:0;
-    font-size:0.8rem;
+    font-size:0.98rem;
     color:var(--muted);
     line-height:1.4;
   }
-  .header .ur{font-family:var(--font-urdu);font-size:0.85rem;}
+
+  /* Instructions card */
+  .instructions-card{
+    background:#fff;
+    border:1.5px solid var(--hay-gold-dark);
+    border-left:5px solid var(--hay-gold-dark);
+    border-radius:6px;
+    padding:16px 16px 14px;
+    margin-bottom:24px;
+  }
+  .instructions-list{
+    margin:0;
+    padding-left:20px;
+    list-style:disc;
+  }
+  .instructions-list li{
+    font-size:1rem;
+    color:var(--ink);
+    margin-bottom:10px;
+    line-height:1.45;
+  }
+  .instructions-list li:last-child{margin-bottom:0;}
 
   /* Farmer info card */
   .farmer-card{
@@ -74,7 +95,7 @@
   .section-label{
     font-family:var(--font-display);
     font-weight:700;
-    font-size:0.95rem;
+    font-size:1.08rem;
     color:var(--barn-brown-dark);
     text-transform:uppercase;
     letter-spacing:0.06em;
@@ -85,29 +106,21 @@
   .field:last-child{margin-bottom:0;}
   label{
     display:block;
-    font-size:0.85rem;
+    font-size:0.98rem;
     font-weight:600;
     color:var(--ink);
-    margin-bottom:3px;
-  }
-  label .ur{
-    display:block;
-    font-family:var(--font-urdu);
-    font-weight:400;
-    font-size:0.85rem;
-    color:var(--muted);
-    margin-top:1px;
+    margin-bottom:5px;
   }
   input,select{
     width:100%;
     font-family:var(--font-body);
-    font-size:1rem;
-    padding:12px 12px;
+    font-size:1.05rem;
+    padding:13px 12px;
     border:1.5px solid #C9BBA0;
     border-radius:5px;
     background:#fff;
     color:var(--ink);
-    min-height:48px;
+    min-height:50px;
   }
   input:focus,select:focus{
     outline:none;
@@ -149,7 +162,7 @@
     background:none;
     border:none;
     color:var(--error);
-    font-size:0.8rem;
+    font-size:0.9rem;
     font-weight:600;
     cursor:pointer;
     padding:6px 0;
@@ -165,7 +178,7 @@
     color:var(--barn-brown-dark);
     font-family:var(--font-body);
     font-weight:700;
-    font-size:0.95rem;
+    font-size:1.05rem;
     padding:14px;
     border-radius:6px;
     cursor:pointer;
@@ -180,7 +193,7 @@
     border:none;
     font-family:var(--font-body);
     font-weight:700;
-    font-size:1.05rem;
+    font-size:1.15rem;
     padding:16px;
     border-radius:6px;
     cursor:pointer;
@@ -188,20 +201,12 @@
   }
   .submit-btn:active{background:var(--pasture-green-dark);}
   .submit-btn:disabled{background:#9BA88F;cursor:not-allowed;}
-  .submit-sub{
-    text-align:center;
-    font-family:var(--font-urdu);
-    font-size:0.85rem;
-    color:#fff;
-    margin-top:2px;
-    opacity:0.9;
-  }
 
   .status{
     margin-top:16px;
     padding:14px;
     border-radius:6px;
-    font-size:0.9rem;
+    font-size:1rem;
     text-align:center;
     display:none;
   }
@@ -209,14 +214,60 @@
   .status.success{background:rgba(75,107,58,0.12);color:var(--pasture-green-dark);border:1.5px solid var(--pasture-green);}
   .status.error{background:rgba(179,58,58,0.10);color:var(--error);border:1.5px solid var(--error);}
 
+  /* Excel offline option */
+  .excel-card{
+    background:var(--paper);
+    border:2px dashed var(--pasture-green);
+    border-radius:6px;
+    padding:16px;
+    margin-bottom:24px;
+  }
+  .excel-card .section-label{margin-bottom:8px;}
+  .excel-card p{
+    font-size:0.95rem;
+    color:var(--muted);
+    margin:0 0 14px;
+    line-height:1.5;
+  }
+  .excel-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .excel-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    background:#fff;
+    border:1.5px solid var(--pasture-green);
+    color:var(--pasture-green-dark);
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:0.92rem;
+    padding:12px 8px;
+    border-radius:5px;
+    cursor:pointer;
+    text-align:center;
+    min-height:48px;
+  }
+  .excel-btn:active{background:rgba(75,107,58,0.10);}
+  #excelFileInput{display:none;}
+  .excel-status{
+    font-size:0.88rem;
+    margin-top:10px;
+    text-align:center;
+    color:var(--pasture-green-dark);
+    display:none;
+  }
+  .excel-status.show{display:block;}
+  .excel-status.error{color:var(--error);}
+
   .footer-note{
     text-align:center;
-    font-size:0.75rem;
+    font-size:0.85rem;
     color:var(--muted);
     margin-top:28px;
     line-height:1.5;
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -229,41 +280,68 @@
       <line x1="11" y1="27" x2="25" y2="27" stroke="#5C3A21" stroke-width="1.5"/>
     </svg>
     <div>
-      <h1>Heifer Growth Record</h1>
-      <p>Enter all your animals below — one form, every tag.<br>
-      <span class="ur">اپنے تمام جانوروں کا ریکارڈ ایک ہی فارم میں درج کریں</span></p>
+      <h1>Heifer Growth Analyzer <span style="font-weight:400;font-size:0.7em;">by Farm-IQ</span></h1>
+      <p>Enter all your animals below — one form, every tag.</p>
     </div>
+  </div>
+
+  <div class="instructions-card">
+    <p class="section-label">Before You Start</p>
+    <ul class="instructions-list">
+      <li>Measure age in months (e.g. 2.5)</li>
+      <li>Please weigh on a calibrated scale, in KG.</li>
+      <li>Height is measured at the withers, in cm.</li>
+      <li>Fill the Excel template or add animals one by one below — whichever is easier for you.</li>
+      <li>We'll use this only to prepare your free growth report.</li>
+    </ul>
   </div>
 
   <div class="farmer-card">
     <p class="section-label">Farmer Details</p>
     <div class="field">
-      <label>Farmer Name<span class="ur">کسان کا نام</span></label>
+      <label>Farm Name</label>
       <input type="text" id="farmerName" required>
     </div>
     <div class="field">
-      <label>Phone / WhatsApp Number<span class="ur">فون نمبر</span></label>
+      <label>WhatsApp No.</label>
       <input type="tel" id="farmerPhone" required>
     </div>
     <div class="field">
-      <label>Village / Location<span class="ur">گاؤں / علاقہ</span></label>
+      <label>Country</label>
+      <input type="text" id="farmerCountry" required>
+    </div>
+    <div class="field">
+      <label>Location</label>
       <input type="text" id="farmerVillage" required>
+    </div>
+    <div class="field">
+      <label>Total Heifers</label>
+      <input type="text" id="farmerTotalHeifers" required>
     </div>
   </div>
 
-  <p class="section-label" style="margin-bottom:14px;">Animal Records<span style="font-family:var(--font-urdu);font-weight:400;text-transform:none;letter-spacing:0;display:block;font-size:0.85rem;color:var(--muted);margin-top:2px;">جانوروں کی تفصیلات</span></p>
+  <div class="excel-card">
+    <p class="section-label">Prefer Excel?</p>
+    <p>Download a blank sheet, fill it offline at your own pace, then upload it here to auto-fill your animal records.</p>
+    <div class="excel-btn-row">
+      <button type="button" class="excel-btn" id="downloadExcelBtn">⬇ Download Template</button>
+      <button type="button" class="excel-btn" id="uploadExcelBtn">⬆ Upload Filled Sheet</button>
+    </div>
+    <input type="file" id="excelFileInput" accept=".xlsx,.xls">
+    <div class="excel-status" id="excelStatus"></div>
+  </div>
+
+  <p class="section-label" style="margin-bottom:14px;">Animal Records</p>
 
   <div id="animalsContainer"></div>
 
-  <button type="button" class="add-btn" id="addAnimalBtn">+ Add Another Animal &nbsp;|&nbsp; ایک اور جانور شامل کریں</button>
+  <button type="button" class="add-btn" id="addAnimalBtn">+ Add Another Animal</button>
 
   <button type="button" class="submit-btn" id="submitBtn">Submit All Records</button>
-  <div class="submit-sub">تمام ریکارڈ جمع کروائیں</div>
 
   <div class="status" id="statusBox"></div>
 
-  <p class="footer-note">Your data is used only to prepare your free heifer growth report.<br>
-  <span style="font-family:var(--font-urdu);">آپ کا ڈیٹا صرف آپ کی گروتھ رپورٹ بنانے کے لیے استعمال ہوگا</span></p>
+  <p class="footer-note">Your data is used only to prepare your free heifer growth report.</p>
 
 </div>
 
@@ -277,9 +355,23 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxa5-ygmiDCw94EJ3WJS
 let animalCount = 0;
 const container = document.getElementById('animalsContainer');
 
-function makeAnimalCard(){
+function makeAnimalCard(prefill){
   animalCount++;
   const num = animalCount;
+  const p = prefill || {};
+  const breedOptions = [
+    ['', 'Select breed'],
+    ['Holstein Friesian', 'Holstein Friesian'],
+    ['Crossbred', 'Crossbred'],
+    ['Sahiwal', 'Sahiwal'],
+    ['Jersey', 'Jersey'],
+    ['Cholistani', 'Cholistani'],
+    ['Others', 'Others']
+  ];
+  const breedHtml = breedOptions.map(([val,label]) => {
+    const sel = (p.breed && p.breed.toLowerCase() === val.toLowerCase()) ? ' selected' : '';
+    return `<option value="${val}"${sel}>${label}</option>`;
+  }).join('');
 
   const wrapper = document.createElement('div');
   wrapper.className = 'animal-wrapper';
@@ -287,35 +379,29 @@ function makeAnimalCard(){
     <div class="stamp-badge">${String(num).padStart(2,'0')}</div>
     <div class="animal-card">
       <div class="field">
-        <label>Ear Tag / Animal ID<span class="ur">ٹیگ نمبر</span></label>
-        <input type="text" class="f-tag" required>
+        <label>Tag/Animal ID</label>
+        <input type="text" class="f-tag" value="${p.tagId ? p.tagId.replace(/"/g,'&quot;') : ''}" required>
       </div>
       <div class="field">
-        <label>Breed<span class="ur">نسل</span></label>
-        <select class="f-breed" required>
-          <option value="">Select breed</option>
-          <option value="Holstein">Holstein</option>
-          <option value="Crossbred (HF x Sahiwal)">Crossbred (HF x Sahiwal)</option>
-          <option value="Crossbred (HF x Tharparkar)">Crossbred (HF x Tharparkar)</option>
-          <option value="Other">Other</option>
-        </select>
+        <label>Breed</label>
+        <select class="f-breed" required>${breedHtml}</select>
       </div>
       <div class="row2">
         <div class="field">
-          <label>Age (months)<span class="ur">عمر (مہینے)</span></label>
-          <input type="number" inputmode="numeric" min="0" class="f-age" required>
+          <label>Age (months)</label>
+          <input type="number" inputmode="numeric" min="0" class="f-age" value="${p.ageMonths || ''}" required>
         </div>
         <div class="field">
-          <label>Weight (kg)<span class="ur">وزن (کلوگرام)</span></label>
-          <input type="number" inputmode="decimal" min="0" step="0.1" class="f-weight" required>
+          <label>Weight (kg)</label>
+          <input type="number" inputmode="decimal" min="0" step="0.1" class="f-weight" value="${p.weightKg || ''}" required>
         </div>
       </div>
       <div class="field">
-        <label>Height at Shoulder (cm)<span class="ur">اونچائی (سینٹی میٹر)</span></label>
-        <input type="number" inputmode="decimal" min="0" step="0.1" class="f-height" required>
+        <label>Height at Withers (cm)</label>
+        <input type="number" inputmode="decimal" min="0" step="0.1" class="f-height" value="${p.heightCm || ''}" required>
       </div>
       <div class="remove-wrap">
-        <button type="button" class="remove-btn">Remove this animal &nbsp;|&nbsp; ہٹا دیں</button>
+        <button type="button" class="remove-btn">Remove this animal</button>
       </div>
     </div>
   `;
@@ -347,22 +433,88 @@ function showStatus(msg, type){
   box.className = 'status show ' + type;
 }
 
+function showExcelStatus(msg, isError){
+  const box = document.getElementById('excelStatus');
+  box.textContent = msg;
+  box.className = 'excel-status show' + (isError ? ' error' : '');
+}
+
+// ---- Excel template download ----
+document.getElementById('downloadExcelBtn').addEventListener('click', () => {
+  const headers = ['Tag ID', 'Breed', 'Age (months)', 'Weight (kg)', 'Height (cm)'];
+  const exampleRow = ['T-101', 'Holstein', 14, 320, 118];
+  const ws = XLSX.utils.aoa_to_sheet([headers, exampleRow]);
+  ws['!cols'] = [{wch:12},{wch:28},{wch:14},{wch:12},{wch:12}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Heifer Data');
+  XLSX.writeFile(wb, 'heifer_growth_template.xlsx');
+});
+
+// ---- Excel upload & parse ----
+document.getElementById('uploadExcelBtn').addEventListener('click', () => {
+  document.getElementById('excelFileInput').click();
+});
+
+document.getElementById('excelFileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    try{
+      const data = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+
+      // skip header row, drop fully empty rows
+      const dataRows = rows.slice(1).filter(r => r.some(c => String(c).trim() !== ''));
+
+      if(dataRows.length === 0){
+        showExcelStatus('No animal rows found in this file.', true);
+        return;
+      }
+
+      // clear existing cards, then add one per row
+      container.innerHTML = '';
+      animalCount = 0;
+      dataRows.forEach(r => {
+        container.appendChild(makeAnimalCard({
+          tagId: String(r[0] || '').trim(),
+          breed: String(r[1] || '').trim(),
+          ageMonths: r[2],
+          weightKg: r[3],
+          heightCm: r[4]
+        }));
+      });
+
+      showExcelStatus(`Loaded ${dataRows.length} animal(s) from your file. Please review below before submitting.`, false);
+    }catch(err){
+      showExcelStatus('Could not read this file. Please use the downloaded template format.', true);
+    }
+    e.target.value = '';
+  };
+  reader.readAsArrayBuffer(file);
+});
+
 function markInvalid(el){ el.classList.add('invalid'); }
 function clearInvalid(el){ el.classList.remove('invalid'); }
 
 document.getElementById('submitBtn').addEventListener('click', async () => {
   const farmerName = document.getElementById('farmerName');
   const farmerPhone = document.getElementById('farmerPhone');
+  const farmerCountry = document.getElementById('farmerCountry');
   const farmerVillage = document.getElementById('farmerVillage');
+  const farmerTotalHeifers = document.getElementById('farmerTotalHeifers');
 
   let valid = true;
-  [farmerName, farmerPhone, farmerVillage].forEach(el => {
+  [farmerName, farmerPhone, farmerCountry, farmerVillage, farmerTotalHeifers].forEach(el => {
     if(!el.value.trim()){ markInvalid(el); valid = false; } else { clearInvalid(el); }
   });
 
   const wrappers = container.querySelectorAll('.animal-wrapper');
   if(wrappers.length === 0){
-    showStatus('Please add at least one animal. کم از کم ایک جانور شامل کریں', 'error');
+    showStatus('Please add at least one animal.', 'error');
     return;
   }
 
@@ -386,21 +538,23 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   });
 
   if(!valid){
-    showStatus('Please fill all highlighted fields. تمام ضروری خانے پُر کریں', 'error');
+    showStatus('Please fill all highlighted fields.', 'error');
     return;
   }
 
   const payload = {
     farmerName: farmerName.value.trim(),
     phone: farmerPhone.value.trim(),
+    country: farmerCountry.value.trim(),
     village: farmerVillage.value.trim(),
+    totalHeifers: farmerTotalHeifers.value.trim(),
     animals: animals,
     submittedAt: new Date().toISOString()
   };
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  btn.textContent = 'Sending... جمع ہو رہا ہے';
+  btn.textContent = 'Sending...';
 
   try{
     if(SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
@@ -412,14 +566,14 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
       headers: {'Content-Type':'text/plain'},
       body: JSON.stringify(payload)
     });
-    showStatus('Submitted successfully! Thank you. کامیابی سے جمع ہو گیا، شکریہ', 'success');
+    showStatus('Submitted successfully! Thank you.', 'success');
     btn.textContent = 'Submit All Records';
     btn.disabled = false;
   }catch(err){
     if(err.message === 'not_configured'){
       showStatus('Form is not yet connected to a sheet (developer setup needed).', 'error');
     } else {
-      showStatus('Could not submit — please check your internet connection and try again. انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں', 'error');
+      showStatus('Could not submit — please check your internet connection and try again.', 'error');
     }
     btn.textContent = 'Submit All Records';
     btn.disabled = false;
