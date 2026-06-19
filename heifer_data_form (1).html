@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heifer Growth Record</title>
+<style>
+  :root{
+    --cream:#F4EEDD;
+    --paper:#FBF7EC;
+    --barn-brown:#5C3A21;
+    --barn-brown-dark:#432A18;
+    --hay-gold:#D9A441;
+    --hay-gold-dark:#B9842C;
+    --pasture-green:#4B6B3A;
+    --pasture-green-dark:#3A5530;
+    --ink:#2B2118;
+    --muted:#8A7860;
+    --error:#B33A3A;
+    --font-display:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;
+    --font-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    --font-urdu:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(217,164,65,0.10), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(75,107,58,0.08), transparent 40%);
+    font-family:var(--font-body);
+    color:var(--ink);
+    min-height:100vh;
+    padding:18px 14px 60px;
+  }
+
+  .container{max-width:520px;margin:0 auto;}
+
+  /* Header */
+  .header{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:22px;
+    padding-bottom:16px;
+    border-bottom:2px solid var(--barn-brown);
+  }
+  .tag-icon{flex-shrink:0;}
+  .header h1{
+    font-family:var(--font-display);
+    font-size:1.5rem;
+    font-weight:700;
+    margin:0 0 2px;
+    color:var(--barn-brown-dark);
+    letter-spacing:0.2px;
+  }
+  .header p{
+    margin:0;
+    font-size:0.8rem;
+    color:var(--muted);
+    line-height:1.4;
+  }
+  .header .ur{font-family:var(--font-urdu);font-size:0.85rem;}
+
+  /* Farmer info card */
+  .farmer-card{
+    background:var(--paper);
+    border:2px solid var(--barn-brown);
+    border-radius:6px;
+    padding:18px 16px;
+    margin-bottom:24px;
+  }
+  .section-label{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:0.95rem;
+    color:var(--barn-brown-dark);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin:0 0 14px;
+  }
+
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:0.85rem;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:3px;
+  }
+  label .ur{
+    display:block;
+    font-family:var(--font-urdu);
+    font-weight:400;
+    font-size:0.85rem;
+    color:var(--muted);
+    margin-top:1px;
+  }
+  input,select{
+    width:100%;
+    font-family:var(--font-body);
+    font-size:1rem;
+    padding:12px 12px;
+    border:1.5px solid #C9BBA0;
+    border-radius:5px;
+    background:#fff;
+    color:var(--ink);
+    min-height:48px;
+  }
+  input:focus,select:focus{
+    outline:none;
+    border-color:var(--hay-gold-dark);
+    box-shadow:0 0 0 3px rgba(217,164,65,0.25);
+  }
+  input.invalid,select.invalid{border-color:var(--error);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  /* Animal wrapper + notch card (the "ear tag" signature) */
+  .animal-wrapper{position:relative;margin:0 0 22px;}
+  .stamp-badge{
+    position:absolute;
+    top:-14px;
+    left:-10px;
+    width:38px;height:38px;
+    background:var(--hay-gold);
+    border:2px solid var(--barn-brown);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:0.95rem;
+    color:var(--barn-brown-dark);
+    z-index:2;
+    box-shadow:1px 2px 0 rgba(67,42,24,0.25);
+  }
+  .animal-card{
+    background:#fff;
+    border:2px solid var(--barn-brown);
+    clip-path:polygon(26px 0,100% 0,100% 100%,0 100%,0 26px);
+    padding:24px 16px 16px 22px;
+    position:relative;
+  }
+  .animal-card .field{margin-bottom:12px;}
+  .remove-btn{
+    background:none;
+    border:none;
+    color:var(--error);
+    font-size:0.8rem;
+    font-weight:600;
+    cursor:pointer;
+    padding:6px 0;
+    text-decoration:underline;
+  }
+  .remove-wrap{text-align:right;margin-top:4px;}
+
+  /* Buttons */
+  .add-btn{
+    width:100%;
+    background:transparent;
+    border:2px dashed var(--barn-brown);
+    color:var(--barn-brown-dark);
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:0.95rem;
+    padding:14px;
+    border-radius:6px;
+    cursor:pointer;
+    margin-bottom:26px;
+  }
+  .add-btn:active{background:rgba(217,164,65,0.15);}
+
+  .submit-btn{
+    width:100%;
+    background:var(--pasture-green);
+    color:#fff;
+    border:none;
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:1.05rem;
+    padding:16px;
+    border-radius:6px;
+    cursor:pointer;
+    min-height:54px;
+  }
+  .submit-btn:active{background:var(--pasture-green-dark);}
+  .submit-btn:disabled{background:#9BA88F;cursor:not-allowed;}
+  .submit-sub{
+    text-align:center;
+    font-family:var(--font-urdu);
+    font-size:0.85rem;
+    color:#fff;
+    margin-top:2px;
+    opacity:0.9;
+  }
+
+  .status{
+    margin-top:16px;
+    padding:14px;
+    border-radius:6px;
+    font-size:0.9rem;
+    text-align:center;
+    display:none;
+  }
+  .status.show{display:block;}
+  .status.success{background:rgba(75,107,58,0.12);color:var(--pasture-green-dark);border:1.5px solid var(--pasture-green);}
+  .status.error{background:rgba(179,58,58,0.10);color:var(--error);border:1.5px solid var(--error);}
+
+  .footer-note{
+    text-align:center;
+    font-size:0.75rem;
+    color:var(--muted);
+    margin-top:28px;
+    line-height:1.5;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <svg class="tag-icon" width="40" height="40" viewBox="0 0 40 40" fill="none">
+      <rect x="6" y="4" width="24" height="32" rx="4" fill="#D9A441" stroke="#5C3A21" stroke-width="2"/>
+      <circle cx="18" cy="12" r="3" fill="#FBF7EC" stroke="#5C3A21" stroke-width="1.5"/>
+      <line x1="11" y1="22" x2="25" y2="22" stroke="#5C3A21" stroke-width="1.5"/>
+      <line x1="11" y1="27" x2="25" y2="27" stroke="#5C3A21" stroke-width="1.5"/>
+    </svg>
+    <div>
+      <h1>Heifer Growth Record</h1>
+      <p>Enter all your animals below — one form, every tag.<br>
+      <span class="ur">اپنے تمام جانوروں کا ریکارڈ ایک ہی فارم میں درج کریں</span></p>
+    </div>
+  </div>
+
+  <div class="farmer-card">
+    <p class="section-label">Farmer Details</p>
+    <div class="field">
+      <label>Farmer Name<span class="ur">کسان کا نام</span></label>
+      <input type="text" id="farmerName" required>
+    </div>
+    <div class="field">
+      <label>Phone / WhatsApp Number<span class="ur">فون نمبر</span></label>
+      <input type="tel" id="farmerPhone" required>
+    </div>
+    <div class="field">
+      <label>Village / Location<span class="ur">گاؤں / علاقہ</span></label>
+      <input type="text" id="farmerVillage" required>
+    </div>
+  </div>
+
+  <p class="section-label" style="margin-bottom:14px;">Animal Records<span style="font-family:var(--font-urdu);font-weight:400;text-transform:none;letter-spacing:0;display:block;font-size:0.85rem;color:var(--muted);margin-top:2px;">جانوروں کی تفصیلات</span></p>
+
+  <div id="animalsContainer"></div>
+
+  <button type="button" class="add-btn" id="addAnimalBtn">+ Add Another Animal &nbsp;|&nbsp; ایک اور جانور شامل کریں</button>
+
+  <button type="button" class="submit-btn" id="submitBtn">Submit All Records</button>
+  <div class="submit-sub">تمام ریکارڈ جمع کروائیں</div>
+
+  <div class="status" id="statusBox"></div>
+
+  <p class="footer-note">Your data is used only to prepare your free heifer growth report.<br>
+  <span style="font-family:var(--font-urdu);">آپ کا ڈیٹا صرف آپ کی گروتھ رپورٹ بنانے کے لیے استعمال ہوگا</span></p>
+
+</div>
+
+<script>
+// ============================================================
+// IMPORTANT: paste your Google Apps Script Web App URL here
+// (see setup instructions provided alongside this file)
+// ============================================================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxa5-ygmiDCw94EJ3WJSO9eripP9_pkzrf79h7LPwKAvT7o-i1ox6fi4vxNUIg_A1k8/exec";
+
+let animalCount = 0;
+const container = document.getElementById('animalsContainer');
+
+function makeAnimalCard(){
+  animalCount++;
+  const num = animalCount;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'animal-wrapper';
+  wrapper.innerHTML = `
+    <div class="stamp-badge">${String(num).padStart(2,'0')}</div>
+    <div class="animal-card">
+      <div class="field">
+        <label>Ear Tag / Animal ID<span class="ur">ٹیگ نمبر</span></label>
+        <input type="text" class="f-tag" required>
+      </div>
+      <div class="field">
+        <label>Breed<span class="ur">نسل</span></label>
+        <select class="f-breed" required>
+          <option value="">Select breed</option>
+          <option value="Holstein">Holstein</option>
+          <option value="Crossbred (HF x Sahiwal)">Crossbred (HF x Sahiwal)</option>
+          <option value="Crossbred (HF x Tharparkar)">Crossbred (HF x Tharparkar)</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>Age (months)<span class="ur">عمر (مہینے)</span></label>
+          <input type="number" inputmode="numeric" min="0" class="f-age" required>
+        </div>
+        <div class="field">
+          <label>Weight (kg)<span class="ur">وزن (کلوگرام)</span></label>
+          <input type="number" inputmode="decimal" min="0" step="0.1" class="f-weight" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Height at Shoulder (cm)<span class="ur">اونچائی (سینٹی میٹر)</span></label>
+        <input type="number" inputmode="decimal" min="0" step="0.1" class="f-height" required>
+      </div>
+      <div class="remove-wrap">
+        <button type="button" class="remove-btn">Remove this animal &nbsp;|&nbsp; ہٹا دیں</button>
+      </div>
+    </div>
+  `;
+  wrapper.querySelector('.remove-btn').addEventListener('click', () => {
+    wrapper.remove();
+    renumberCards();
+  });
+  return wrapper;
+}
+
+function renumberCards(){
+  const wrappers = container.querySelectorAll('.animal-wrapper');
+  wrappers.forEach((w, i) => {
+    w.querySelector('.stamp-badge').textContent = String(i+1).padStart(2,'0');
+  });
+  animalCount = wrappers.length;
+}
+
+document.getElementById('addAnimalBtn').addEventListener('click', () => {
+  container.appendChild(makeAnimalCard());
+});
+
+// start with one card pre-filled
+container.appendChild(makeAnimalCard());
+
+function showStatus(msg, type){
+  const box = document.getElementById('statusBox');
+  box.textContent = msg;
+  box.className = 'status show ' + type;
+}
+
+function markInvalid(el){ el.classList.add('invalid'); }
+function clearInvalid(el){ el.classList.remove('invalid'); }
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const farmerName = document.getElementById('farmerName');
+  const farmerPhone = document.getElementById('farmerPhone');
+  const farmerVillage = document.getElementById('farmerVillage');
+
+  let valid = true;
+  [farmerName, farmerPhone, farmerVillage].forEach(el => {
+    if(!el.value.trim()){ markInvalid(el); valid = false; } else { clearInvalid(el); }
+  });
+
+  const wrappers = container.querySelectorAll('.animal-wrapper');
+  if(wrappers.length === 0){
+    showStatus('Please add at least one animal. کم از کم ایک جانور شامل کریں', 'error');
+    return;
+  }
+
+  const animals = [];
+  wrappers.forEach(w => {
+    const tag = w.querySelector('.f-tag');
+    const breed = w.querySelector('.f-breed');
+    const age = w.querySelector('.f-age');
+    const weight = w.querySelector('.f-weight');
+    const height = w.querySelector('.f-height');
+    [tag, breed, age, weight, height].forEach(el => {
+      if(!el.value){ markInvalid(el); valid = false; } else { clearInvalid(el); }
+    });
+    animals.push({
+      tagId: tag.value.trim(),
+      breed: breed.value,
+      ageMonths: age.value,
+      weightKg: weight.value,
+      heightCm: height.value
+    });
+  });
+
+  if(!valid){
+    showStatus('Please fill all highlighted fields. تمام ضروری خانے پُر کریں', 'error');
+    return;
+  }
+
+  const payload = {
+    farmerName: farmerName.value.trim(),
+    phone: farmerPhone.value.trim(),
+    village: farmerVillage.value.trim(),
+    animals: animals,
+    submittedAt: new Date().toISOString()
+  };
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending... جمع ہو رہا ہے';
+
+  try{
+    if(SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
+      throw new Error('not_configured');
+    }
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify(payload)
+    });
+    showStatus('Submitted successfully! Thank you. کامیابی سے جمع ہو گیا، شکریہ', 'success');
+    btn.textContent = 'Submit All Records';
+    btn.disabled = false;
+  }catch(err){
+    if(err.message === 'not_configured'){
+      showStatus('Form is not yet connected to a sheet (developer setup needed).', 'error');
+    } else {
+      showStatus('Could not submit — please check your internet connection and try again. انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں', 'error');
+    }
+    btn.textContent = 'Submit All Records';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
